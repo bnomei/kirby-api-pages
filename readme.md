@@ -19,12 +19,16 @@ Virtual Pages from API Endpoints
 
 ## Usage
 
+## TODO
+
+- [ ] link at https://forum.getkirby.com/t/virtual-pages-with-api-and-caching/28090/9
+
 
 ## Settings
 
-| bnomei.api-pages. | Default | Description |
-|-------------------|---------|-------------|
-| xx                | `x`     | x           |
+| bnomei.api-pages. | Default | Description                      |
+|-------------------|---------|----------------------------------|
+| expire            | `60`    | Cache expire duration in minutes |
 
 ## Disclaimer
 

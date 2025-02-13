@@ -1,0 +1,24 @@
+blueprint: page
+
+records:
+  url: https://catfact.ninja/breeds
+  query: data.sortBy("coat", "desc")
+  template: cat
+  # model: cat
+  # expire: 60
+  map:
+    title: breed
+    # omit or use * to select all
+    # content: *
+    # select a few by path
+    content:
+      country: country
+      origin: origin
+      coat: coat
+      pattern: pattern
+
+sections:
+  catfacts:
+    label: Virtual Pages from CatFacts API
+    type: pages
+    template: cat

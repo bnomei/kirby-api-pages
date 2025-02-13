@@ -1,0 +1,13 @@
+blueprint: page
+
+preset: page
+
+fields:
+  country:
+    type: text
+  origin:
+    type: text
+  coat:
+    type: text
+  pattern:
+    type: text
