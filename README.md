@@ -1,1 +1,0 @@
-# kirby-api-pages
