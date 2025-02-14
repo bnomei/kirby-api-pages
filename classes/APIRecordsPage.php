@@ -4,10 +4,20 @@ namespace Bnomei;
 
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
+use Kirby\Content\Field;
 
 class APIRecordsPage extends Page
 {
-    protected function records(): APIRecords
+    public function recordsConfig(): Field|array
+    {
+        // if you do not use the blueprint to config your API records
+        // you can return the array here. that is helpful if you want
+        // to use environment variable or other dynamic options.
+
+        return [];
+    }
+
+    public function records(): APIRecords
     {
         return new APIRecords($this);
     }

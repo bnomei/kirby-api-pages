@@ -7,7 +7,6 @@ parameters:
         - tests
 
     ignoreErrors:
-        # - '#Undefined variable: \$this#'
-        - '#Call to an undefined method Kirby\\Cms\\Ingredients::#'
+        - '#Property Bnomei\\APIRecords::#'
         -
             identifier: missingType.iterableValue

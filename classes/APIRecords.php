@@ -29,7 +29,7 @@ class APIRecords
 
     private string $cacheKey;
 
-    public function __construct(protected ?Page $page = null)
+    public function __construct(protected ?APIRecordsPage $page = null)
     {
         $this->records = null;
 
@@ -37,10 +37,10 @@ class APIRecords
         $this->endpointParams = $this->config('params', [], true);
         $this->recordsDataQuery = $this->config('query', resolveClosures: true);
         $this->recordsDataMap = $this->config('map'); // closure resolving here would break the mapping by closure
-        $this->recordsCacheExpire = $this->config('expire', intval(option('bnomei.api-pages.expire')), true);
+        $this->recordsCacheExpire = $this->config('expire', intval(option('bnomei.api-pages.expire')), true); // @phpstan-ignore-line
         $this->recordTemplate = $this->config('template');
         $this->recordModel = $this->config('model');
-        $this->cacheKey = md5($this->endpointUrl.json_encode($this->endpointParams));
+        $this->cacheKey = md5(implode('', [$this->endpointUrl, json_encode($this->endpointParams)]));
     }
 
     public function page(): ?Page
@@ -53,7 +53,8 @@ class APIRecords
         $result = null;
 
         // try from model itself
-        if ($config = $this->page?->recordsConfig()) {
+        $config = $this->page?->recordsConfig();
+        if (! empty($config)) {
             if (is_array($config)) {
                 $result = A::get($config, $key);
             } elseif ($config instanceof Field) {
@@ -101,7 +102,8 @@ class APIRecords
 
         // handle the data like Kirby's OptionApi does to allow for the entry query with sorting etc.
         $data = Nest::create($data);
-        $data = Query::factory($this->recordsDataQuery)->resolve($data)?->toArray() ?? [];
+        $result = Query::factory($this->recordsDataQuery)->resolve($data);
+        $data = $result?->toArray() ?? []; // @phpstan-ignore-line
 
         $records = array_map(function (array $data) use ($map) {
             // create the record object which resolves data with the map
@@ -143,7 +145,7 @@ class APIRecords
 
         if ($remote->code() >= 200 && $remote->code() <= 300) {
             $json = $remote->json() ?? [];
-            if ($expire >= 0) {
+            if (! is_null($expire) && $expire >= 0) {
                 kirby()->cache('bnomei.api-pages')->set($this->cacheKey, $json, $expire);
             }
 
