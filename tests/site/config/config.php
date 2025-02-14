@@ -26,6 +26,7 @@ return [
             'map' => [
                 // kirby <=> json
                 'title' => 'name',
+                'uuid' => fn ($i) => md5($i['name']),
                 'template' => fn ($i) => strtolower($i['species']), // site/blueprints/pages/alien.yml || human.yml
                 'content' => [
                     'species' => 'species',
