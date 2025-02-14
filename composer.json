@@ -2,7 +2,7 @@
     "name": "bnomei/kirby-api-pages",
     "type": "kirby-plugin",
     "version": "5.0.0",
-    "description": "Virtual Pages from API Endpoints",
+    "description": "Virtual Pages from APIs",
     "license": "MIT",
     "authors": [
         {

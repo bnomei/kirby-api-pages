@@ -1,0 +1,11 @@
+GRAPHQL https://rickandmortyapi.com/graphql
+
+query {
+  characters() {
+    results {
+      name
+      status
+      species
+    }
+  }
+}

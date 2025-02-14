@@ -1,0 +1,8 @@
+sections:
+  rickandmorty:
+    label: Virtual Pages from RickAndMorty API
+    type: pages
+    info: "{{ page.hstatus }} [{{ page.intendedTemplate }}]"
+    templates:
+      - alien
+      - human

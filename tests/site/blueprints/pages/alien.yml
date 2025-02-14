@@ -1,0 +1,11 @@
+fields:
+  species:
+    type: text
+    disabled: true
+    help: "matches template {{ page.intendedTemplate }}"
+  hstatus:
+    type: radio
+    options:
+      Alive: Alive
+      Dead: Dead
+      unknown: unknown

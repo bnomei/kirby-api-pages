@@ -1,4 +1,4 @@
-# Kirby API Pages 
+# Kirby API-Pages 
 
 [![Kirby 5](https://flat.badgen.net/badge/Kirby/5?color=ECC748)](https://getkirby.com)
 ![PHP 8.2](https://flat.badgen.net/badge/PHP/8.2?color=4E5B93&icon=php&label)
@@ -9,7 +9,7 @@
 [![Discord](https://flat.badgen.net/badge/discord/bnomei?color=7289da&icon=discord&label)](https://discordapp.com/users/bnomei)
 [![Buymecoffee](https://flat.badgen.net/badge/icon/donate?icon=buymeacoffee&color=FF813F&label)](https://www.buymeacoffee.com/bnomei)
 
-Virtual Pages from API Endpoints
+Virtual Pages from APIs
 
 ## Installation
 
@@ -26,9 +26,11 @@ Virtual Pages from API Endpoints
 
 ## Settings
 
-| bnomei.api-pages. | Default | Description                      |
-|-------------------|---------|----------------------------------|
-| expire            | `60`    | Cache expire duration in minutes |
+| bnomei.api-pages. | Default       | Description                                                                   |
+|-------------------|---------------|-------------------------------------------------------------------------------|
+| expire            | `60`          | Cache expire duration in minutes                                              |
+| exception         | `fn($remote)` | Exception handler for non 2xx status codes                                    |
+| records           | `[]`          | Custom config arrays for your virtual Pages (alternative to Blueprint config) |
 
 ## Disclaimer
 
