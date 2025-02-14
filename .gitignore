@@ -9,11 +9,10 @@
 /tests/site/accounts
 /tests/site/cache
 /tests/site/sessions
-/tests/content
 /tests/http/secret
 /tests/site/blueprints/pages/secret*
 /tests/site/models/secret*
-/tests/content/secret
+/tests/content/secrets
 /tests/site/config/.license*
 
 # files of Composer dependencies that are not needed for the plugin
