@@ -100,6 +100,10 @@ class APIRecords
         $map = $this->recordsDataMap;
         $data = $this->fetch();
 
+        if (empty($data)) {
+            return [];
+        }
+
         // handle the data like Kirby's OptionApi does to allow for the entry query with sorting etc.
         $data = Nest::create($data);
         $result = Query::factory($this->recordsDataQuery)->resolve($data);

@@ -19,10 +19,140 @@ Virtual Pages from APIs
 
 ## Usage
 
-## TODO
+You can find these examples in the tests of this repository.
 
-- [ ] link at https://forum.getkirby.com/t/virtual-pages-with-api-and-caching/28090/9
+### Records definition via Blueprint
 
+**site/models/cats.php**
+```php
+class CatsPage extends \Bnomei\APIRecordsPage {}
+```
+
+**site/blueprints/cat.yml**
+```yml
+title: Cat
+fields:
+    country:
+        type: text
+    origin:
+        type: text
+    coat:
+        type: text
+    pattern:
+        type: text
+```
+
+**site/blueprints/cats.yml**
+```yml
+title: Cats
+
+records:
+  url: https://catfact.ninja/breeds
+  query: data.sortBy("coat", "desc")
+  template: cat
+  # model: cat
+  # expire: 60
+  map:
+    title: breed
+    # omit or use * to select all
+    # content: *
+    # select a few by path
+    content:
+      country: country
+      origin: origin
+      coat: coat
+      pattern: pattern
+
+sections:
+  catfacts:
+    label: Virtual Pages from CatFacts API
+    type: pages
+    template: cat
+```
+
+### Records definition via Config
+
+**site/blueprints/rickandmorty.yml**
+**site/blueprints/alien.yml**
+**site/blueprints/human.yml**
+
+**site/models/rickandmorty.php**
+```php
+class RickandmortyPage extends \Bnomei\APIRecordsPage {}
+```
+
+**site/config/config.php**
+```php
+<?php
+
+return [
+    'bnomei.api-pages.records' => [
+        'rickandmorty' => [ // site/models/rickandmorty.php & site/blueprints/pages/rickandmorty.yml
+            'url' => 'https://rickandmortyapi.com/graphql', // string or closure
+            'params' => [
+                'headers' => function (\Bnomei\APIRecords $records) {
+                    // you could add Basic/Bearer Auth within this closure if you needed
+                    // or retrieve environment variable with `env()` and use them here
+                    return [
+                        'Content-Type: application/json',
+                    ];
+                },
+                'method' => 'POST', // defaults to GET else provide a string or closure
+                'data' => json_encode(['query' => '{ characters() { results { name status species }}}']), // string or closure
+            ],
+            'query' => 'data.characters.results', // {"data: [...]}
+            'map' => [
+                // kirby <=> json
+                'title' => 'name',
+                'uuid' => fn ($i) => md5($i['name']),
+                'template' => fn ($i) => strtolower($i['species']), // site/blueprints/pages/alien.yml || human.yml
+                'content' => [
+                    'species' => 'species',
+                    'hstatus' => 'status', // status is reserved by kirby
+                ],
+            ],
+        ],
+    ],
+    // other options ...
+];
+```
+
+### Records definition via Page Model
+
+**site/blueprints/secret.yml**
+**site/blueprints/secrets.yml**
+
+**site/models/secrets.php**
+```php
+class SecretsPage extends \Bnomei\APIRecordsPage {
+    public function recordsConfig(): array
+    {
+        return [
+            'url' => 'https://example.api/secrets', // does not exist
+            'params' => [
+                'headers' => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer MY_BEARER_TOKEN',
+                ],
+                'method' => 'POST',
+                'data' => json_encode([
+                    'query' => $this->myquery()->value(),
+                ]),
+            ],
+            'query' => 'data.whispers',
+            'template' => 'secret',
+            'map' => [
+                // kirby <=> json
+                'title' => 'item.name',
+                'content' => [
+                    'description' => 'item.desc',
+                    'uuid' => 'id',
+                ],
+            ],
+        ];
+    }
+}
+```
 
 ## Settings
 

@@ -9,8 +9,9 @@ Kirby::plugin('bnomei/api-pages', [
     'options' => [
         'cache' => true,
         'expire' => 60, // in minutes
+        // copy this to your config as bnomei.api-pages.exception
         'exception' => function (\Kirby\Http\Remote $remote) {
-            throw new \Exception($remote->url().' => '.$remote->code());
+            // throw new \Exception($remote->url().' => '.$remote->code());
         },
         'records' => [
             // register custom record configs as an alternative to the blueprint
