@@ -3,6 +3,7 @@
 namespace Bnomei;
 
 use AllowDynamicProperties;
+use Kirby\Data\Yaml;
 use Kirby\Toolkit\A;
 use Kirby\Toolkit\Obj;
 use Kirby\Toolkit\Str;
@@ -122,6 +123,13 @@ class APIRecord extends Obj
     public function toArray(): array
     {
         $result = parent::toArray();
+
+        // convert all arrays in content to yaml
+        foreach ($result['content'] as $key => $value) {
+            if (is_array($value)) {
+                $result['content'][$key] = Yaml::encode($value);
+            }
+        }
 
         unset($result['parent']); // do not expose the parent
 
