@@ -29,6 +29,8 @@ class APIRecords
 
     private string $cacheKey;
 
+    private ?string $recordsDataPageInfo;
+
     public function __construct(protected ?APIRecordsPage $page = null)
     {
         $this->records = null;
@@ -36,6 +38,7 @@ class APIRecords
         $this->endpointUrl = $this->config('url', resolveClosures: true);
         $this->endpointParams = $this->config('params', [], true);
         $this->recordsDataQuery = $this->config('query', resolveClosures: true);
+        $this->recordsDataPageInfo = $this->config('pageInfo', resolveClosures: true);
         $this->recordsDataMap = $this->config('map'); // closure resolving here would break the mapping by closure
         $this->recordsCacheExpire = $this->config('expire', intval(option('bnomei.api-pages.expire')), true); // @phpstan-ignore-line
         $this->recordTemplate = $this->config('template');
@@ -98,7 +101,7 @@ class APIRecords
         }
 
         $map = $this->recordsDataMap;
-        $data = $this->fetch();
+        $data = $this->fetchPaginated();
 
         if (empty($data)) {
             return [];
@@ -133,7 +136,7 @@ class APIRecords
         return $this->records = $records;
     }
 
-    public function fetch(): array
+    public function fetchPaginated(): array
     {
         // get cache if it exists
         $cache = kirby()->cache('bnomei.api-pages')->get($this->cacheKey);
@@ -141,19 +144,38 @@ class APIRecords
             return $cache;
         }
 
+        // run at least once then keep trying with
+        // GraphQLs Relay PageInfo Connections Specification
+        $json = [];
+        do {
+            $result = $this->fetch(after: $cursor ?? null);
+            $cursor = A::get($result, $this->recordsDataPageInfo.'.endCursor');
+            $hasNextPage = A::get($result, $this->recordsDataPageInfo.'.hasNextPage', false);
+            $json = array_merge_recursive($json, $result);
+        } while ($hasNextPage);
+
+        $expire = $this->recordsCacheExpire;
+        if (! is_null($expire) && $expire >= 0) {
+            kirby()->cache('bnomei.api-pages')->set($this->cacheKey, $json, $expire);
+        }
+
+        return [];
+    }
+
+    public function fetch(?string $after = null): array
+    {
         // fetch from remote
         $params = $this->endpointParams;
-        $expire = $this->recordsCacheExpire;
+        if ($this->recordsDataPageInfo && $after && $data = A::get($params, 'data')) {
+            // GraphQL PageInfo starting at null will be paginated with after
+            $params['data'] = str_replace('after: null', 'after: \"'.$after.'\"', $data);
+        }
+
         $method = strtolower($params['method'] ?? 'GET');
         $remote = Remote::$method($this->endpointUrl, $params);
 
         if ($remote->code() >= 200 && $remote->code() <= 300) {
-            $json = $remote->json() ?? [];
-            if (! is_null($expire) && $expire >= 0) {
-                kirby()->cache('bnomei.api-pages')->set($this->cacheKey, $json, $expire);
-            }
-
-            return $json;
+            return $remote->json() ?? [];
         } else {
             $ex = option('bnomei.api-pages.exception');
             if ($ex instanceof \Closure) {
