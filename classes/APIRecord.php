@@ -99,18 +99,18 @@ class APIRecord extends Obj
             $this->$property = $value;
         }
 
-        // infer slug from title
-        if ($property === 'title' && ! $this->get('slug')) {
+        // infer slug from title if it has not been set yet or is empty
+        if ($property === 'title' && empty($this->get('slug'))) {
             $this->slug(Str::slug(strval($value)));
         }
 
-        // infer model from template
-        if ($property === 'template' && ! $this->get('model')) {
+        // ALWAYS infer model from template
+        if ($property === 'template') {
             $this->model($value);
         }
 
         // infer id from parent and slug
-        if ($property === 'slug' && ! $this->get('id')) {
+        if ($property === 'slug' && empty($this->get('id'))) {
             $this->id($this->parent ?
                 $this->parent.'/'.$this->slug :
                 $this->slug
