@@ -1,7 +1,7 @@
 {
     "name": "bnomei/kirby-api-pages",
     "type": "kirby-plugin",
-    "version": "5.1.1",
+    "version": "5.2.0",
     "description": "Virtual Pages from APIs",
     "license": "MIT",
     "authors": [
@@ -32,6 +32,9 @@
         "allow-plugins": {
             "getkirby/composer-installer": true,
             "pestphp/pest-plugin": true
+        },
+        "platform": {
+            "php": "8.2.0"
         }
     },
     "autoload": {

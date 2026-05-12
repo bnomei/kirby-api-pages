@@ -7,22 +7,22 @@ namespace Composer\Autoload;
 class ComposerStaticInitf926970e55586ae8f37c7106afccfd97
 {
     public static $prefixLengthsPsr4 = array (
-        'K' => 
+        'K' =>
         array (
             'Kirby\\' => 6,
         ),
-        'B' => 
+        'B' =>
         array (
             'Bnomei\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Kirby\\' => 
+        'Kirby\\' =>
         array (
             0 => __DIR__ . '/..' . '/getkirby/composer-installer/src',
         ),
-        'Bnomei\\' => 
+        'Bnomei\\' =>
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),

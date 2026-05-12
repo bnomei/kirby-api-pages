@@ -1,3 +1,5 @@
 <?php
 
-class CatsPage extends \Bnomei\APIRecordsPage {}
+use Bnomei\APIRecordsPage;
+
+class CatsPage extends APIRecordsPage {}

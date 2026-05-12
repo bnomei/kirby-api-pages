@@ -1,5 +1,7 @@
 <?php
 
+use Bnomei\APIRecords;
+
 return [
     'editor' => 'phpstorm',
     'debug' => true,
@@ -12,7 +14,7 @@ return [
         'rickandmorty' => [ // site/models/rickandmorty.php & site/blueprints/pages/rickandmorty.yml
             'url' => 'https://rickandmortyapi.com/graphql', // string or closure
             'params' => [
-                'headers' => function (\Bnomei\APIRecords $records) {
+                'headers' => function (APIRecords $records) {
                     // you could add Basic/Bearer Auth within this closure if you needed
                     // or retrieve environment variable with `env()` and use them here
                     return [

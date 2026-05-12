@@ -23,6 +23,8 @@ class APIRecords
 
     private ?int $recordsCacheExpire;
 
+    private bool $recordsCacheEnabled;
+
     private ?string $recordTemplate;
 
     private ?string $recordModel;
@@ -40,6 +42,7 @@ class APIRecords
         $this->recordsDataQuery = $this->config('query', resolveClosures: true);
         $this->recordsDataPageInfo = $this->config('pageInfo', resolveClosures: true);
         $this->recordsDataMap = $this->config('map'); // closure resolving here would break the mapping by closure
+        $this->recordsCacheEnabled = boolval($this->config('cache', option('bnomei.api-pages.cache'), true)); // @phpstan-ignore-line
         $this->recordsCacheExpire = $this->config('expire', intval(option('bnomei.api-pages.expire')), true); // @phpstan-ignore-line
         $this->recordTemplate = $this->config('template');
         $this->recordModel = $this->config('model');
@@ -53,30 +56,41 @@ class APIRecords
 
     public function config(string $key, mixed $default = null, bool $resolveClosures = false): mixed
     {
-        $result = null;
+        $notFound = new \stdClass;
+        $result = $notFound;
 
         // try from model itself
         $config = $this->page?->recordsConfig();
         if (! empty($config)) {
             if (is_array($config)) {
-                $result = A::get($config, $key);
+                $result = A::get($config, $key, $notFound);
             } elseif ($config instanceof Field) {
-                $result = $config->value();
-                $json = is_string($result) ? json_decode($result, true) : false;
+                $value = $config->value();
+                $json = is_string($value) ? json_decode($value, true) : false;
                 if (is_array($json)) {
-                    $result = $json;
+                    $result = A::get($json, $key, $notFound);
                 }
             }
         }
+        if ($result === null) {
+            $result = $notFound;
+        }
 
         // try a config value for page template name
-        if (! $result && $template = $this->page?->intendedTemplate()->name()) {
-            $result = option("bnomei.api-pages.records.{$template}.{$key}", null);
+        if ($result === $notFound && $template = $this->page?->intendedTemplate()->name()) {
+            $result = option("bnomei.api-pages.records.{$template}.{$key}", $notFound);
+        }
+        if ($result === null) {
+            $result = $notFound;
         }
 
         // try blueprint
-        if (! $result && $fromBlueprint = A::get($this->page?->blueprint()->toArray() ?? [], 'records.'.$key)) {
-            $result = $fromBlueprint;
+        if ($result === $notFound) {
+            $result = A::get($this->page?->blueprint()->toArray() ?? [], 'records.'.$key, $notFound);
+        }
+
+        if ($result === $notFound || $result === null) {
+            return $default;
         }
 
         // resolve closures
@@ -86,9 +100,11 @@ class APIRecords
                     $value = $value($this);
                 }
             });
+        } elseif ($resolveClosures && $result instanceof \Closure) {
+            $result = $result($this);
         }
 
-        return $result ?? $default;
+        return $result;
     }
 
     /**
@@ -139,9 +155,11 @@ class APIRecords
     public function fetchPaginated(): array
     {
         // get cache if it exists
-        $cache = kirby()->cache('bnomei.api-pages')->get($this->cacheKey);
-        if ($cache) {
-            return $cache;
+        if ($this->recordsCacheEnabled === true) {
+            $cache = kirby()->cache('bnomei.api-pages')->get($this->cacheKey);
+            if ($cache !== null) {
+                return $cache;
+            }
         }
 
         // run at least once then keep trying with
@@ -155,11 +173,11 @@ class APIRecords
         } while ($hasNextPage);
 
         $expire = $this->recordsCacheExpire;
-        if (! is_null($expire) && $expire >= 0) {
+        if ($this->recordsCacheEnabled === true && ! is_null($expire) && $expire >= 0) {
             kirby()->cache('bnomei.api-pages')->set($this->cacheKey, $json, $expire);
         }
 
-        return [];
+        return $json;
     }
 
     public function fetch(?string $after = null): array

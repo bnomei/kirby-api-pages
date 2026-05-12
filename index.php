@@ -1,7 +1,9 @@
 <?php
 
+use Bnomei\APIRecords;
 use Bnomei\APIRecordsPage;
 use Kirby\Cms\Page;
+use Kirby\Http\Remote;
 
 @include_once __DIR__.'/vendor/autoload.php';
 
@@ -10,7 +12,7 @@ Kirby::plugin('bnomei/api-pages', [
         'cache' => true,
         'expire' => 60, // in minutes
         // copy this to your config as bnomei.api-pages.exception
-        'exception' => function (\Kirby\Http\Remote $remote) {
+        'exception' => function (Remote $remote) {
             // throw new \Exception($remote->url().' => '.$remote->code());
         },
         'records' => [
@@ -33,7 +35,7 @@ Kirby::plugin('bnomei/api-pages', [
             'args' => [],
             'command' => static function ($cli): void {
                 $cli->out('🚽 Flushing API-Pages Cache...');
-                \Bnomei\APIRecords::flush(); // flushes ALL caches of ALL known APIRecordPage instances
+                APIRecords::flush(); // flushes ALL caches of ALL known APIRecordPage instances
                 $cli->success('✅ Done.');
 
                 if (function_exists('janitor')) {

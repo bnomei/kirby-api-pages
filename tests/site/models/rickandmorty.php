@@ -1,3 +1,5 @@
 <?php
 
-class RickandmortyPage extends \Bnomei\APIRecordsPage {}
+use Bnomei\APIRecordsPage;
+
+class RickandmortyPage extends APIRecordsPage {}

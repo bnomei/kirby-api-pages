@@ -50,6 +50,7 @@ records:
   url: https://catfact.ninja/breeds
   query: data.sortBy("coat", "desc")
   template: cat
+  # cache: true
   # model: cat
   # expire: 60
   map:
@@ -158,7 +159,8 @@ class SecretsPage extends \Bnomei\APIRecordsPage {
 
 | bnomei.api-pages. | Default       | Description                                                                   |
 |-------------------|---------------|-------------------------------------------------------------------------------|
-| expire            | `60`          | Cache expire duration in minutes                                              |
+| cache             | `true`        | Cache remote API responses; `false` disables both cache reads and writes       |
+| expire            | `60`          | Cache expire duration in minutes when caching is enabled                       |
 | exception         | `fn($remote)` | Exception handler for non 2xx status codes                                    |
 | records           | `[]`          | Custom config arrays for your virtual Pages (alternative to Blueprint config) |
 
