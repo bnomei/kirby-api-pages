@@ -1,7 +1,7 @@
 {
     "name": "bnomei/kirby-api-pages",
     "type": "kirby-plugin",
-    "version": "5.2.1",
+    "version": "6.0.0",
     "description": "Virtual Pages from APIs",
     "license": "MIT",
     "authors": [
@@ -72,6 +72,9 @@
         ]
     },
     "extra": {
-        "kirby-cms-path": "tests/kirby"
+        "kirby-cms-path": "tests/kirby",
+        "kirby": {
+            "compatible": "^5.0 || ^6.0"
+        }
     }
 }
